@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     Double Result = 0.0, numberOne = 0.0, temp = 0.0;
     //need to reformat answer
     NumberFormat format, longFormat;
+    //dot check
+    Boolean dot_present = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
             Result = temp;
             current_operator = ob.getText().toString();
             updateCalculation();
+            //when operator click dot is not present in number_one
+            dot_present = false;
         }
 
     }
@@ -122,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         numberOne = 0.0;
         temp = 0.0;
         updateCalculation();
+        dot_present = false;
 
     }
 
@@ -134,5 +139,31 @@ public class MainActivity extends AppCompatActivity {
         calculation.setText(sCalculation);
         answer.setText(sAnswer);
 
+    }
+
+    public void onDotClick(View v)
+    {
+        //create boolean dot _present check if dot is present or not
+        if (!dot_present)
+        {
+            //check length of number_one
+            if (number_one.length() == 0)
+            {
+                number_one = "0.";
+                sCalculation = "0.";
+                sAnswer = "0.";
+                dot_present = true;
+                updateCalculation();
+            }
+            else
+            {
+                number_one += ".";
+                sCalculation += ".";
+                sAnswer += ".";
+                dot_present  = true;
+                updateCalculation();
+
+            }
+        }
     }
 }
