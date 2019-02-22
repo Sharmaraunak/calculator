@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         sAnswer = "";
         current_operator = "";
         number_one = "";
-        Result =temp;
+        Result =0.0;
         numberOne = 0.0;
         temp = 0.0;
         prev_answer = "";
@@ -176,6 +176,59 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickEqual(View v)
     {
+        showResult();
+
+    }
+
+    public void onClickModulo(View view)
+    {
+        if (sAnswer != "" && getcharfromLast(sCalculation,1)!= ' ')
+        {
+            sCalculation += "% ";
+            //value of temp will change accordingly to the operator
+            switch(current_operator)
+            {
+                case "":
+                    temp = temp/100;
+                    break;
+
+                case "+":
+                    temp = Result + ((Result*numberOne)/100);
+                    break;
+
+                case "-":
+                    temp = Result - ((Result*numberOne)/100);
+                    break;
+
+                case "x":
+                    temp = Result * (numberOne/100);
+                    break;
+
+                case "/":
+                    try
+                    {
+                        temp = Result + ((Result*numberOne)/100);
+
+                    }catch (Exception e)
+                    {
+                        sAnswer = e.getMessage();
+                    }
+                    break;
+            }
+
+            sAnswer = format.format(temp).toString();
+            if (sAnswer.length()>9)
+            {
+                sAnswer = longFormat.format(temp).toString();
+            }
+            Result = temp;
+            //now we show result
+            showResult();
+        }
+    }
+
+    private void showResult()
+    {
         if (sAnswer != "" && sAnswer != prev_answer)
         {
             sCalculation += "\n= " + sAnswer + "\n------------\n" + sAnswer + " ";
@@ -190,14 +243,89 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickModulo(View view)
+    public void onPlusOrMinusClick(View view)
     {
-        if (sAnswer != "" && getcharfromLast(sCalculation,1) != " ")
+        if (sAnswer != "" && getcharfromLast(sCalculation,1)!= ' ')
         {
-            sCalculation += "% ";
-            //value of temp will change accordingly to the operator
+            numberOne = numberOne*(-1);
+            number_one = format.format(numberOne).toString();
 
+            switch (current_operator)
+            {
+                case "":
+                    temp = numberOne;
+                    sCalculation = number_one;
+                    break;
+
+                case "+":
+                    temp = Result + numberOne;
+                    //need to show - sign in front
+                    removeUntilChar(sCalculation,' ');
+                    sCalculation += number_one;
+                    break;
+
+                case "-":
+                    temp = Result - numberOne;
+                    //need to show - sign in front
+                    removeUntilChar(sCalculation,' ');
+                    sCalculation += number_one;
+                    break;
+
+                case "*":
+                    temp = Result * numberOne;
+                    //need to show - sign in front
+                    removeUntilChar(sCalculation,' ');
+                    sCalculation += number_one;
+                    break;
+
+                case "/":
+                    try{
+                        temp = Result + numberOne;
+                        //need to show - sign in front
+                        removeUntilChar(sCalculation,' ');
+                        sCalculation += number_one;
+
+                    }catch (Exception e)
+                    {
+                        sAnswer = e.getMessage();
+                    }
+                    break;
+
+            }
+            sAnswer = format.format(temp).toString();
+            updateCalculation();
 
         }
+
+    }
+
+   public void removeUntilChar(String str, char chr)
+    {
+        char c = getcharfromLast(str,1);
+
+        if (c != chr)
+        {
+            //remove last char
+            str = removeChar(str,1);
+            sCalculation = str;
+            updateCalculation();
+            removeUntilChar(str,chr);
+        }
+
+
+    }
+
+    private String removeChar(String str, int i) {
+        char c = str.charAt(str.length()-1);
+        if (c == '.' && !dot_present)
+        {
+            dot_present = false;
+        }
+        if(c==' ')
+        {
+            return  str.substring(0,str.length()-(i-1));
+
+        }
+        return  str.substring(0,str.length()-1);
     }
 }
