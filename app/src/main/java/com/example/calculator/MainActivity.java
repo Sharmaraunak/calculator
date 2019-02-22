@@ -14,12 +14,12 @@ public class MainActivity extends AppCompatActivity {
 
     TextView calculation, answer;
     //variables needed for calculation
-    String sCalculation = "", sAnswer = "", number_one = "", current_operator = "";
+    String sCalculation = "", sAnswer = "", number_one = "", current_operator = "", prev_answer = "";
     Double Result = 0.0, numberOne = 0.0, temp = 0.0;
     //need to reformat answer
     NumberFormat format, longFormat;
     //dot check
-    Boolean dot_present = false;
+    Boolean dot_present = false, number_allow  =true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,49 +41,53 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onClickNumber(View v) {
-        //find which number is pressed
-        Button bn = (Button) v;
-        sCalculation += bn.getText();
-        number_one += bn.getText();
-        numberOne = Double.parseDouble(number_one);
+        //number is allowed
+        if(number_allow) {
+            //find which number is pressed
 
-        //switch between buttons
-        switch (current_operator) {
-            case ""://if current operator is null
-                temp = Result + numberOne;
-                sAnswer = format.format(temp).toString();
-                break;
+            Button bn = (Button) v;
+            sCalculation += bn.getText();
+            number_one += bn.getText();
+            numberOne = Double.parseDouble(number_one);
 
-            case "+"://if current operator is plus
-                temp = Result + numberOne;
-                sAnswer = format.format(temp).toString();
-                break;
-
-            case "-"://if current operator is minus
-                temp = Result - numberOne;
-                sAnswer = format.format(temp).toString();
-                break;
-
-            case "x"://if current operator is multiplication
-                temp = Result * numberOne;
-                sAnswer = format.format(temp).toString();
-                break;
-
-            case "/"://if current operator is null
-                try {
-                    //divided by 0 causes exception
-                    temp = Result / numberOne;
+            //switch between buttons
+            switch (current_operator) {
+                case ""://if current operator is null
+                    temp = Result + numberOne;
                     sAnswer = format.format(temp).toString();
+                    break;
 
-                } catch (Exception e) {
-                    sAnswer = e.getMessage();
+                case "+"://if current operator is plus
+                    temp = Result + numberOne;
+                    sAnswer = format.format(temp).toString();
+                    break;
 
-                }
-                break;
+                case "-"://if current operator is minus
+                    temp = Result - numberOne;
+                    sAnswer = format.format(temp).toString();
+                    break;
+
+                case "x"://if current operator is multiplication
+                    temp = Result * numberOne;
+                    sAnswer = format.format(temp).toString();
+                    break;
+
+                case "/"://if current operator is null
+                    try {
+                        //divided by 0 causes exception
+                        temp = Result / numberOne;
+                        sAnswer = format.format(temp).toString();
+
+                    } catch (Exception e) {
+                        sAnswer = e.getMessage();
+
+                    }
+                    break;
+
+            }
+            updateCalculation();
 
         }
-        updateCalculation();
-
     }
 
     public void onClickOperator(View v) {
@@ -107,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
             updateCalculation();
             //when operator click dot is not present in number_one
             dot_present = false;
+            number_allow = true;
         }
 
     }
@@ -122,11 +127,13 @@ public class MainActivity extends AppCompatActivity {
         sAnswer = "";
         current_operator = "";
         number_one = "";
-        Result = 0.0;
+        Result =temp;
         numberOne = 0.0;
         temp = 0.0;
+        prev_answer = "";
         updateCalculation();
         dot_present = false;
+        number_allow = true;
 
     }
 
@@ -164,6 +171,33 @@ public class MainActivity extends AppCompatActivity {
                 updateCalculation();
 
             }
+        }
+    }
+
+    public void onClickEqual(View v)
+    {
+        if (sAnswer != "" && sAnswer != prev_answer)
+        {
+            sCalculation += "\n= " + sAnswer + "\n------------\n" + sAnswer + " ";
+            number_one = "";
+            numberOne = 0.0;
+            Result = temp;
+            prev_answer = sAnswer;
+            updateCalculation();
+            //no editing of answer
+            dot_present = true;
+            number_allow = false;
+        }
+    }
+
+    public void onClickModulo(View view)
+    {
+        if (sAnswer != "" && getcharfromLast(sCalculation,1) != " ")
+        {
+            sCalculation += "% ";
+            //value of temp will change accordingly to the operator
+
+
         }
     }
 }
